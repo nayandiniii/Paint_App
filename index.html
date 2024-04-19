@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Paint App</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-image: url('bg.jpg'); /* Add your background image URL here */
+        background-size: cover;
+        background-position: center;
+    }
+
+    canvas {
+        border: 1px solid black;
+        color: white;
+    }
+
+    #title {
+        text-align: center;
+        font-size: 24px;
+        color: rgb(241, 167, 167);
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    button{
+        color: white;
+        background-color: rgb(241, 167, 167);
+    }
+    #status{
+        font-size: 17px;
+        color: rgb(241, 167, 167);
+    }
+</style>
+</head>
+<body>
+
+<h1 id="title">Simple Paint App - Nandini</h1>
+<canvas id="paintCanvas" width="500" height="500"></canvas>
+<button onclick="clearCanvas()">Reset</button><br><br><br>
+<p id="status"></p>
+
+<script>
+    // Get the canvas element and context
+    var canvas = document.getElementById('paintCanvas');
+    var context = canvas.getContext('2d');
+
+    // Variables to store mouse position and drawing status
+    var isDrawing = false;
+    var lastX = 0;
+    var lastY = 0;
+
+    // Function to draw a circle on the canvas
+    function drawCircle(x, y, radius) {
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fillStyle = getRandomColor(); // Fill with a random color
+        context.fill();
+    }
+
+    // Function to handle mouse down event
+    canvas.addEventListener('mousedown', function(e) {
+        isDrawing = true;
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+        drawCircle(lastX, lastY, 30); // Increase initial circle size
+    });
+
+    // Function to handle mouse move event
+    canvas.addEventListener('mousemove', function(e) {
+        if (isDrawing) {
+            var currentX = e.offsetX;
+            var currentY = e.offsetY;
+            var distance = Math.sqrt(Math.pow(currentX - lastX, 2) + Math.pow(currentY - lastY, 2));
+            drawCircle(lastX, lastY, distance / 2); // Draw circle with radius based on mouse movement
+            lastX = currentX;
+            lastY = currentY;
+        }
+    });
+
+    // Function to handle mouse up event
+    canvas.addEventListener('mouseup', function() {
+        isDrawing = false;
+    });
+
+    // Function to handle canvas click event
+    canvas.addEventListener('click', function(e) {
+        var hit = context.isPointInPath(e.offsetX, e.offsetY);
+        document.getElementById('status').textContent = hit ? 'Hit' : 'Miss';
+    });
+
+    // Function to handle canvas double click event
+    canvas.addEventListener('dblclick', function(e) {
+        var hit = context.isPointInPath(e.offsetX, e.offsetY);
+        if (hit) {
+            context.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        }
+    });
+
+    // Function to generate a random color
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // Function to clear the canvas
+    function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+</script>
+
+</body>
+</html>
